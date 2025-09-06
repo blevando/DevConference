@@ -9,7 +9,7 @@ namespace DevConference.Shared.Models.Entities
 {
     public class Conferences
     {
-        [Key]
+        
         public int Id { get; set; }
         public string? Title { get; set; }
         public string? Description { get; set; }
