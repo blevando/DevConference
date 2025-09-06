@@ -1,0 +1,70 @@
+﻿@page "/conference"
+@attribute [StreamRendering]
+@inject NavigationManager Navigation
+@inject HttpClient Http
+@using DevConference.Shared.Models.Entities
+<h3>Welcome to Conferences</h3>
+
+<div class="container">
+    <div class="row g-4">
+        @foreach (var conf in conferences)
+        {
+            <div class="col-12 col-md-6">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">@conf.Title</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">@conf.StartDate.ToString("MMMM d, yyyy")</h6>
+                        <p class="card-text flex-grow-1">@conf.Description</p>
+
+                        <ul class="list-unstyled mb-3">
+                            <li><strong>Location:</strong> @conf.Location</li>
+                            <li><strong>Time:</strong> @conf.ConferenceStatus.ToString()</li>
+                        </ul>
+
+                        <div class="mt-auto">
+                            <button class="btn btn-primary w-25" @onclick="() => Register(conf.Id)" aria-label="Register for @conf.Title">
+                                Register Now!
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    //  private List<DevConference.Shared.Models.Entities.Conferences> conferences;
+    private List<DevConference.Shared.Models.Entities.Conferences> conferences = new List<DevConference.Shared.Models.Entities.Conferences>();
+    protected override async Task OnInitializedAsync()
+    {
+        await GetConferences();
+    }
+
+    private async Task GetConferences()
+    {
+        try
+        {
+
+            HttpClient httpClient = new HttpClient();
+            //httpClient.BaseAddress = new Uri("https://localhost:7241/");
+           // var response = await httpClient.GetAsync("api/Conferences/GetAllConferences");
+            
+
+            conferences = await Http.GetFromJsonAsync<List<DevConference.Shared.Models.Entities.Conferences>>("https://localhost:7241/api/Conferences/GetAllConferences");
+            
+           // conferences = await Http.GetFromJsonAsync<List<DevConference.Shared.Models.Entities.Conferences>>("api/Conferences/GetAllConferences");
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error fetching conferences: {ex.Message}");
+           // conferences = new(); // fallback to empty list
+        }
+    }
+
+    private void Register(int conferenceId)
+    {
+        Navigation.NavigateTo($"/register/{conferenceId}");
+    }
+}
+

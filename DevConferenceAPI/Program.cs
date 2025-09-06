@@ -1,4 +1,7 @@
 using DevConferenceAPI.Data;
+using DevConferenceAPI.Manager;
+using DevConferenceAPI.Services.Interfaces;
+using DevConferenceAPI.Services.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +15,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//Repo
+builder.Services.AddScoped<IConferences, ConferencesRepository>();
+
+
+// Managers
+
+builder.Services.AddScoped<ConferencesManager>();
 
 
 var app = builder.Build();

@@ -1,11 +1,25 @@
 using DevConference.Client.Pages;
 using DevConference.Components;
+using System.Net.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents();
+
+
+// OR with base address:
+builder.Services.AddHttpClient("API", client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7241/");
+});
+
+//builder.Services.AddHttpClient("API", client =>
+//{
+//    client.BaseAddress = new Uri("https://localhost:7241/");
+//});
+
 
 var app = builder.Build();
 
