@@ -1,0 +1,11 @@
+﻿@page "/about"
+@attribute [StreamRendering]
+ 
+<PageTitle>About</PageTitle>
+<h3>@currentTime.ToString()</h3>
+
+@code {
+    
+    DateTime currentTime = DateTime.Now;
+    
+}
