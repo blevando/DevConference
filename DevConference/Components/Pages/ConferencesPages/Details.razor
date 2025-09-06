@@ -1,0 +1,62 @@
+﻿@page "/conferences/details"
+@using Microsoft.EntityFrameworkCore
+@using DevConference.Shared.Models.Entities
+@inject IDbContextFactory<DevConferenceAPI.Data.AplicationDbContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h2>Conferences</h2>
+    <hr />
+    @if (conferences is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">Title</dt>
+            <dd class="col-sm-10">@conferences.Title</dd>
+            <dt class="col-sm-2">Description</dt>
+            <dd class="col-sm-10">@conferences.Description</dd>
+            <dt class="col-sm-2">StartDate</dt>
+            <dd class="col-sm-10">@conferences.StartDate</dd>
+            <dt class="col-sm-2">EndDate</dt>
+            <dd class="col-sm-10">@conferences.EndDate</dd>
+            <dt class="col-sm-2">Location</dt>
+            <dd class="col-sm-10">@conferences.Location</dd>
+            <dt class="col-sm-2">ImageUrl</dt>
+            <dd class="col-sm-10">@conferences.ImageUrl</dd>
+            <dt class="col-sm-2">WebsiteUrl</dt>
+            <dd class="col-sm-10">@conferences.WebsiteUrl</dd>
+            <dt class="col-sm-2">IsActive</dt>
+            <dd class="col-sm-10">@conferences.IsActive</dd>
+            <dt class="col-sm-2">ConferenceStatus</dt>
+            <dd class="col-sm-10">@conferences.ConferenceStatus</dd>
+        </dl>
+        <div>
+            <a href="@($"/conferences/edit?id={conferences.Id}")">Edit</a> |
+            <a href="@($"/conferences")">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    private Conferences? conferences;
+
+    [SupplyParameterFromQuery]
+    private int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        conferences = await context.Conferences.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (conferences is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}

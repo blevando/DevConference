@@ -1,0 +1,129 @@
+﻿@page "/conferences/edit"
+@using Microsoft.EntityFrameworkCore
+@using DevConference.Shared.Models.Entities
+@inject IDbContextFactory<DevConferenceAPI.Data.AplicationDbContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Edit</PageTitle>
+
+<h1>Edit</h1>
+
+<h2>Conferences</h2>
+<hr />
+@if (Conferences is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm method="post" Model="Conferences" OnValidSubmit="UpdateConferences" FormName="edit" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary role="alert"/>
+                <input type="hidden" name="Conferences.Id" value="@Conferences.Id" />
+                <div class="mb-3">
+                    <label for="title" class="form-label">Title:</label>
+                    <InputText id="title" @bind-Value="Conferences.Title" class="form-control" />
+                    <ValidationMessage For="() => Conferences.Title" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description:</label>
+                    <InputText id="description" @bind-Value="Conferences.Description" class="form-control" />
+                    <ValidationMessage For="() => Conferences.Description" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="startdate" class="form-label">StartDate:</label>
+                    <InputDate id="startdate" @bind-Value="Conferences.StartDate" class="form-control" />
+                    <ValidationMessage For="() => Conferences.StartDate" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="enddate" class="form-label">EndDate:</label>
+                    <InputDate id="enddate" @bind-Value="Conferences.EndDate" class="form-control" />
+                    <ValidationMessage For="() => Conferences.EndDate" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="location" class="form-label">Location:</label>
+                    <InputText id="location" @bind-Value="Conferences.Location" class="form-control" />
+                    <ValidationMessage For="() => Conferences.Location" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="imageurl" class="form-label">ImageUrl:</label>
+                    <InputText id="imageurl" @bind-Value="Conferences.ImageUrl" class="form-control" />
+                    <ValidationMessage For="() => Conferences.ImageUrl" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="websiteurl" class="form-label">WebsiteUrl:</label>
+                    <InputText id="websiteurl" @bind-Value="Conferences.WebsiteUrl" class="form-control" />
+                    <ValidationMessage For="() => Conferences.WebsiteUrl" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="isactive" class="form-label">IsActive:</label>
+                    <InputCheckbox id="isactive" @bind-Value="Conferences.IsActive" class="form-check-input" />
+                    <ValidationMessage For="() => Conferences.IsActive" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="conferencestatus" class="form-label">ConferenceStatus:</label>
+                    <InputNumber id="conferencestatus" @bind-Value="Conferences.ConferenceStatus" class="form-control" />
+                    <ValidationMessage For="() => Conferences.ConferenceStatus" class="text-danger" />
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<div>
+    <a href="/conferences">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    private int Id { get; set; }
+
+    [SupplyParameterFromForm]
+    private Conferences? Conferences { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        Conferences ??= await context.Conferences.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (Conferences is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more information, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task UpdateConferences()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Attach(Conferences!).State = EntityState.Modified;
+
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!ConferencesExists(Conferences!.Id))
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        NavigationManager.NavigateTo("/conferences");
+    }
+
+    private bool ConferencesExists(int id)
+    {
+        using var context = DbFactory.CreateDbContext();
+        return context.Conferences.Any(e => e.Id == id);
+    }
+}

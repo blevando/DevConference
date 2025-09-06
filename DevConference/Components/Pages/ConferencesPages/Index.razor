@@ -1,0 +1,66 @@
+﻿@page "/conferences"
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using DevConference.Shared.Models.Entities
+@inject HttpClient Http
+
+<PageTitle>Index</PageTitle>
+
+<h1>Conferences</h1>
+
+<p>
+    <a href="conferences/create">Create New</a>
+</p>
+
+@if (conferences == null || !conferences.Any())
+{
+    <p>No conferences available.</p>
+
+   foreach (var c in conferences)
+   {
+        
+
+   }
+}
+else
+{
+    <QuickGrid Class="table" Items="@conferences.AsQueryable()">
+        <PropertyColumn Property="conference => conference.Title" />
+        <PropertyColumn Property="conference => conference.Description" />
+        <PropertyColumn Property="conference => conference.StartDate" />
+        <PropertyColumn Property="conference => conference.EndDate" />
+        <PropertyColumn Property="conference => conference.Location" />
+        <PropertyColumn Property="conference => conference.ImageUrl" />
+        <PropertyColumn Property="conference => conference.WebsiteUrl" />
+        <PropertyColumn Property="conference => conference.IsActive" />
+        <PropertyColumn Property="conference => conference.ConferenceStatus" />
+
+        <TemplateColumn Context="conference">
+            <a href="@($"conferences/edit?id={conference.Id}")">Edit</a> |
+            <a href="@($"conferences/details?id={conference.Id}")">Details</a> |
+            <a href="@($"conferences/delete?id={conference.Id}")">Delete</a>
+        </TemplateColumn>
+
+    </QuickGrid>
+}
+
+@code {
+    private List<DevConference.Shared.Models.Entities.Conferences> conferences = new List<DevConference.Shared.Models.Entities.Conferences>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetConferences();
+    }
+
+    private async Task GetConferences()
+    {
+        try
+        {
+            conferences = await Http.GetFromJsonAsync<List<DevConference.Shared.Models.Entities.Conferences>>("https://localhost:7241/api/Conferences/GetAllConferences");
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error fetching conferences: {ex.Message}");
+            conferences = new List<DevConference.Shared.Models.Entities.Conferences>(); // Fallback to empty list
+        }
+    }
+}
