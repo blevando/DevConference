@@ -1,14 +1,59 @@
 ﻿@inherits LayoutComponentBase
 
 <div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+@* 
+     <div class="sidebar">
+            <NavMenu />
+        </div> *@
 
     <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+        
+        <nav class="navbar navbar-expand-lg  navbar-dark bg-black px-4">
+            <!-- Brand -->
+           @*  <a class="navbar-brand" href="">Naistrings</a>
+
+            <!-- Toggler for small screens -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNav"
+                    aria-controls="topNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button> *@
+
+            <!-- Horizontal menu -->
+            <div class="collapse navbar-collapse" id="topNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                            <span class="bi bi-house-door-fill"></span> Home
+                        </NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="counter">
+                            <span class="bi bi-plus-square-fill"></span> Counter
+                        </NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="weather">
+                            <span class="bi bi-list-nested"></span> Weather
+                        </NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="About">
+                            <span class="bi bi-list-nested"></span> About Us
+                        </NavLink>
+                    </li>
+
+                </ul>
+
+                @* <!-- Right-aligned link -->
+                <span class="navbar-text">
+                    <a href="https://learn.microsoft.com/aspnet/core/" target="_blank" class="nav-link text-light">
+                        About
+                    </a>
+                </span> *@
+            </div>
+        </nav>       
+      
+
 
         <article class="content px-4">
             @Body
