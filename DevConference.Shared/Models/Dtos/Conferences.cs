@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace DevConference.Shared.Models.Dtos
 {
+
     public class Conferences
     {
             public string? Title { get; set; }
