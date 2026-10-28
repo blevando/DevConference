@@ -1,0 +1,41 @@
+@page "/"
+@inject HttpClient Http
+<PageTitle>Naistrings Administrator Portal</PageTitle>
+<h1>Naistrings Administrator Portal</h1>
+<p>Manage events, schedules, registrations and operational workflows.</p>
+<section><h2>API connectivity</h2><p>@(apiStatus ?? "Checking API connection…")</p><button @onclick="CheckApi">Check API</button></section>
+<p class="notice">Authentication and administrative permissions are not implemented in this foundation package. Do not deploy as a production admin portal.</p>
+@code {
+ private string? apiStatus;
+ protected override async Task OnInitializedAsync() => await CheckApi();
+ // private async Task CheckApi() {
+ //  try { using var response = await Http.GetAsync("health"); apiStatus = response.IsSuccessStatusCode ? "Connected to NaistringsAPI." : $"API responded with status {(int)response.StatusCode}."; }
+ //  catch { apiStatus = "API is not reachable. Confirm it is running and the configured URL is correct."; }
+ // }
+    private async Task CheckApi()
+    {
+        try
+        {
+            using var response =
+                await Http.GetAsync("api/v1/diagnostics/ping");
+
+            if (response.IsSuccessStatusCode)
+            {
+                apiStatus = "Connected to NaistringsAPI.";
+            }
+            else
+            {
+                apiStatus =
+                    $"API returned HTTP {(int)response.StatusCode}.";
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            apiStatus = $"API connection failed: {ex.Message}";
+        }
+        catch (TaskCanceledException)
+        {
+            apiStatus = "API request timed out.";
+        }
+    }
+}

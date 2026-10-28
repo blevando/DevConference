@@ -1,0 +1,6 @@
+@Naistring.Backend_HostAddress = http://localhost:5212
+
+GET {{Naistring.Backend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
