@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NaistringsAPI.Managers;
 using NaistringsAPI.Models.DTOs;
+using System.Data;
+using System.Security.Claims;
 
 namespace NaistringsAPI.Controllers;
 
@@ -27,9 +29,32 @@ public sealed class AuthController : ControllerBase
         return result is null ? Unauthorized(new { message = "Invalid credentials or account not confirmed." }) : Ok(result);
     }
 
-    [Authorize, HttpGet("me")]
-    public IActionResult Me() => Ok(new { userId = User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)?.Value, email = User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Email)?.Value, roles = User.FindAll(System.Security.Claims.ClaimTypes.Role).Select(x => x.Value).ToArray() });
+    [Authorize]
+    [HttpGet("me")]
+    public IActionResult Me()
+    {
+        return Ok(new
+        {
+            userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
 
-    [Authorize(Roles = "SuperAdmin,Admin"), HttpGet("admin-check")]
-    public IActionResult AdminCheck() => Ok(new { message = "Administrative access granted." });
+            email = User.FindFirst(ClaimTypes.Email)?.Value,
+
+            roles = User.FindAll(ClaimTypes.Role)
+                .Select(x => x.Value)
+                .ToArray()
+        });
+    }
+    [Authorize(Roles = "SuperAdmin,Admin,CommunityMember")]
+    [HttpGet("admin-check")]
+    public IActionResult AdminCheck()
+    {
+        var roles = User.FindAll(ClaimTypes.Role)
+            .Select(x => x.Value)
+            .ToArray();
+
+        return Ok(new
+        {
+            message = $"{string.Join(", ", roles)} access granted."
+        });
+    }
 }
